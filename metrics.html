@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="metric.css" />
+  <link rel="stylesheet" href="/Study-Hub/css/nav.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Performance Metrics</title>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Study Hub</h2>
+    <ul>
+      <li><a href="/Study-Hub/User/home.php">Home</a></li>
+      <li><a href="/Study-Hub/User/profile.php">Profile</a></li>
+      <li><a href="/Study-Hub/Metrics/metrics.html">Metrics</a></li>
+      <li><a href="/Study-Hub/User/pomodoro.php">Pomodoro</a></li>
+      <li><a href="/Study-Hub/Metrics/targets.php">Targets</a></li>
+      <li><a href="/Study-Hub/User/files.php">Files</a></li>
+      <li><a href="/Study-Hub/php/logout.php">Logout</a></li>
+    </ul>
+  </div>
+  <div class="content">
+  <main >
+    <h2>Your Performance Metrics</h2>
+
+    <section>
+      <table id="gradeTable" class="data-table">
+        <thead>
+          <tr>
+            <th>Unit Name</th>
+            <th>CW %</th>
+            <th>Exam %</th>
+            <th>CAT 1</th>
+            <th>CAT 2</th>
+            <th>CAT 3</th>
+            <th>CAT 4</th>
+            <th>CAT 5</th>
+            <th>Projected Exam</th>
+          </tr>
+        </thead>
+        <tbody id="gradeTableBody">
+          <!-- Filled by JS -->
+        </tbody>
+      </table>
+    </section>
+
+<section>
+  <div class="chart-container">
+  <h3>CATs Over Time</h3>
+  <canvas id="catsChart" class="data-chart"></canvas>
+</div>
+<div class="exam-container">
+  <h3>Projected Exam Scores</h3>
+  <canvas id="examChart"></canvas>
+</div>
+</section>
+
+
+    <section>
+      <h3>Summary</h3>
+      <table id="interpretationTable" class="data-table">
+        <thead>
+          <tr>
+            <th>Unit</th>
+            <th>CAT Avg (/10)</th>
+            <th>Total Coursework (%)</th>
+            <th>Exam (%)</th>
+            <th>Projected Final (%)</th>
+          </tr>
+        </thead>
+        <tbody id="summaryBody">
+          <!-- Filled by JS -->
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" class="special">Average Final Grade</td>
+            <td id="avgFinal">-</td>
+          </tr>
+          <tr>
+            <td colspan="4" class="special">Final Grade Range</td>
+            <td id="rangeFinal">-</td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+  </main>
+</div>
+  <script src="script.js"></script>
+  
+</body>
+</html>
