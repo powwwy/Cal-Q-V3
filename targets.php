@@ -1,12 +1,12 @@
 <?php
 session_start();
-if (!isset($_SESSION['userID'])) {
-  header('Location: login.php');
+if (!isset($_SESSION['studentID'])) {
+  header('Location: ../User/login.html');
   exit;
 }
 
 require '../php/connect.php';
-$userId = $_SESSION['userID'];
+$userId = $_SESSION['studentID'];
 
 // Get all joined groups
 $stmt = $conn->prepare("SELECT g.GroupID, g.Name FROM studygroups g JOIN groupmemberships gm ON g.GroupID = gm.GroupID WHERE gm.UserID = ?");
@@ -35,7 +35,6 @@ $stmt->close();
       <li><a href="/Study-Hub/Metrics/metrics.html">Metrics</a></li>
       <li><a href="/Study-Hub/User/pomodoro.php">Pomodoro</a></li>
       <li><a href="/Study-Hub/Metrics/targets.php">Targets</a></li>
-      <li><a href="/Study-Hub/User/files.php">Files</a></li>
       <li><a href="/Study-Hub/php/logout.php">Logout</a></li>
     </ul>
   </div>

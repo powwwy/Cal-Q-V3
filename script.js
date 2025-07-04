@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tableBody.appendChild(row);
 
        // Compute stats
-const catSum = catScores.reduce((sum, val) => sum + val, 0); // still a number
+const catSum = catScores.reduce((sum, val) => sum + val, 0); 
 const catAvg = catScores.length ? (catSum / catScores.length).toFixed(1) : '0.0';
 const cwPercent = catSum;
 const projectedFinal = cwPercent + examScore;
