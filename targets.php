@@ -33,7 +33,7 @@ $stmt->close();
       <li><a href="/Study-Hub/User/home.php">Home</a></li>
       <li><a href="/Study-Hub/User/profile.php">Profile</a></li>
       <li><a href="/Study-Hub/Metrics/metrics.html">Metrics</a></li>
-      <li><a href="/Study-Hub/User/pomodoro.php">Pomodoro</a></li>
+      <li><a href="/Study-Hub/User/pomodoro.html">Pomodoro</a></li>
       <li><a href="/Study-Hub/Metrics/targets.php">Targets</a></li>
       <li><a href="/Study-Hub/php/logout.php">Logout</a></li>
     </ul>
@@ -48,15 +48,15 @@ $stmt->close();
         <?php for ($i = 1; $i <= 5; $i++): ?>
   <div class="cat-input">
     <label>CAT <?= $i ?>:</label>
-    <input type="number" name="cat_scores[]" placeholder="Score">
-    <input type="number" name="cat_outof[]" placeholder="Out of">
+    <input type="number" name="cat_scores[]" placeholder="Score" max="10">
+    <input type="number" name="cat_outof[]" placeholder="Out of" max="10">
   </div>
 <?php endfor; ?>
 
         <div class="cat-input">
           <label>Exam:</label>
-          <input type="number" name="exam_score" placeholder="Score" required>
-          <input type="number" name="exam_outof" placeholder="Out of" required>
+          <input type="number" name="exam_score" placeholder="Score" max="70" required>
+          <input type="number" name="exam_outof" placeholder="Out of" max="70" required>
         </div>
         <button type="submit" class="submit-btn">Save Targets</button>
       </form>

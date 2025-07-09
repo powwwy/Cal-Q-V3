@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  fetch('../php/get_metrics.php')
+  fetch('/Study-Hub/php/get_metrics.php')
     .then(res => res.json())
     .then(data => {
       if (!Array.isArray(data) || data.length === 0) {
@@ -35,15 +35,15 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         tableBody.appendChild(row);
 
-       // Compute stats
-const catSum = catScores.reduce((sum, val) => sum + val, 0); 
-const catAvg = catScores.length ? (catSum / catScores.length).toFixed(1) : '0.0';
-const cwPercent = catSum;
-const projectedFinal = cwPercent + examScore;
+        // Compute stats
+        const catSum = catScores.reduce((sum, val) => sum + val, 0); 
+        const catAvg = catScores.length ? (catSum / catScores.length).toFixed(1) : '0.0';
+        const cwPercent = catSum;
+        const projectedFinal = cwPercent + examScore;
 
-finalSum += projectedFinal;
-minFinal = Math.min(minFinal, projectedFinal);
-maxFinal = Math.max(maxFinal, projectedFinal);
+        finalSum += projectedFinal;
+        minFinal = Math.min(minFinal, projectedFinal);
+        maxFinal = Math.max(maxFinal, projectedFinal);
 
         // Render summary table
         const summaryRow = document.createElement('tr');
@@ -69,7 +69,7 @@ maxFinal = Math.max(maxFinal, projectedFinal);
       avgFinalCell.textContent = (finalSum / data.length).toFixed(1);
       rangeFinalCell.textContent = `${minFinal} - ${maxFinal}`;
 
-      // Chart rendering
+      // Chart rendering with gradients
       renderCharts(unitLabels, catSeries, examScores);
     })
     .catch(err => {
@@ -79,26 +79,51 @@ maxFinal = Math.max(maxFinal, projectedFinal);
 
 function renderCharts(units, catSeries, examScores) {
   const catLabels = ['CAT 1', 'CAT 2', 'CAT 3', 'CAT 4', 'CAT 5'];
+  const chartColors = [
+    'rgba(88, 221, 208, 1)',
+    'rgba(255, 0, 0,1)',  // --color-accent
+    'rgba(77, 22, 186, 1)', // --color-primary-light
+    'rgba(207, 212, 218, 1)', // --color-primary
+    'rgba(45, 74, 83, 1)',    // --background-card
+    'rgba(215, 255, 248, 1)' , // --background-light
+    'rgba(255, 255, 255, 1)', // --color-text
+    'rgba(0, 0, 0, 1)', // --color-text-dark
+     // --color-error
+  ];
 
-  // Transpose catSeries to group by unit instead of by CAT
-  const unitCatSeries = units.map((unitName, i) => {
-    const scores = catSeries.map(cat => cat[i] ?? null); // null for missing
-    return {
-      label: unitName,
-      data: scores,
-      borderColor: getCatColor(i),
-      backgroundColor: getCatColor(i),
-      tension: 0.3,
-      spanGaps: false
-    };
-  });
+  // Create gradient fill function
+  const createGradient = (ctx, chartArea, color) => {
+    const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+    gradient.addColorStop(0, color.replace('1)', '0.7)'));
+    gradient.addColorStop(1, color.replace('1)', '0.1)'));
+    return gradient;
+  };
 
+  // CAT Scores Line Chart with Gradient Bottom
   const catCtx = document.getElementById('catsChart').getContext('2d');
   new Chart(catCtx, {
     type: 'line',
     data: {
       labels: catLabels,
-      datasets: unitCatSeries
+      datasets: units.map((unitName, i) => ({
+        label: unitName,
+        data: catSeries.map(cat => cat[i] ?? null),
+        borderColor: chartColors[i % chartColors.length],
+        backgroundColor: function(context) {
+          const chart = context.chart;
+          const {ctx, chartArea} = chart;
+          if (!chartArea) return null;
+          return createGradient(ctx, chartArea, chartColors[i % chartColors.length]);
+        },
+        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#fff',
+        pointBorderWidth: 2,
+        fill: true,
+        tension: 0.3,
+        spanGaps: false
+      }))
     },
     options: {
       responsive: true,
@@ -106,23 +131,58 @@ function renderCharts(units, catSeries, examScores) {
         y: {
           min: 0,
           max: 10,
+          grid: {
+            color: 'rgba(96, 96, 96, 0.79)'
+          },
+          ticks: {
+            color: '#ffffff',
+          },
           title: {
             display: true,
-            text: 'Score (0–10)'
+            text: 'Score (0–10)',
+            color: '#ffffff'
+          }
+        },
+        x: {
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)'
+          },
+          ticks: {
+            color: '#ffffff'
           }
         }
       },
       plugins: {
-        legend: { position: 'top' },
+        legend: { 
+          position: 'top',
+          labels: {
+            color: '#ffffff',
+            font: {
+              size: 12
+            }
+          }
+        },
         title: {
           display: true,
-          text: 'CAT Progression Per Unit'
+          text: 'CAT Progression Per Unit',
+          color: '#ffffff',
+          font: {
+            size: 16
+          }
+        },
+        tooltip: {
+          backgroundColor: 'var(--background-card)',
+          titleColor: 'var(--color-accent)',
+          bodyColor: 'var(--color-text)',
+          borderColor: 'var(--color-accent)',
+          color: '#ffffff',
+          borderWidth: 1
         }
       }
     }
   });
 
-  // Exam Chart stays the same
+  // Exam Scores Bar Chart with Glass Effect
   const examCtx = document.getElementById('examChart').getContext('2d');
   new Chart(examCtx, {
     type: 'bar',
@@ -131,7 +191,12 @@ function renderCharts(units, catSeries, examScores) {
       datasets: [{
         label: 'Exam Score',
         data: examScores,
-        backgroundColor: '#00b894'
+        backgroundColor: units.map((_, i) => 
+          `rgba(88, 221, 208, ${0.5 + (i * 0.1)})` // Gradient-like effect
+        ),
+        borderColor: 'var(--color-accent)',
+        borderWidth: 1,
+        borderRadius: 4
       }]
     },
     options: {
@@ -140,25 +205,48 @@ function renderCharts(units, catSeries, examScores) {
         y: {
           min: 0,
           max: 70,
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)'
+          },
+          ticks: {
+            color: '#ffffff',
+          },
           title: {
             display: true,
-            text: 'Exam Score (%)'
+            text: 'Exam Score (%)',
+            color: '#ffffff'
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            color: '#ffffff'
           }
         }
       },
       plugins: {
-        legend: { display: false },
+        legend: { 
+          display: false 
+        },
         title: {
           display: true,
-          text: 'Exam Scores Per Unit'
+          text: 'Exam Scores Per Unit',
+          color: '#ffffff',
+          font: {
+            size: 16
+          }
+        },
+        tooltip: {
+          backgroundColor: 'var(--background-card)',
+          titleColor: 'var(--color-accent)',
+          bodyColor: 'var(--color-text)',
+          borderColor: 'var(--color-accent)',
+          color: '#ffffff',
+          borderWidth: 1
         }
       }
     }
   });
-}
-
-
-function getCatColor(index) {
-  const palette = ['#0984e3', '#6c5ce7', '#fd79a8', '#e17055', '#00cec9'];
-  return palette[index % palette.length];
 }
